@@ -12,8 +12,6 @@ dotenv.config();
 
 const app = express();
 
-connectDB(); // MongoDB 연결
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -45,6 +43,16 @@ app.use((err, req, res, next) => {
 
 // Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error.message);
+    process.exit(1); // 연결 실패 시 프로세스 종료
+  }
+};
+
+startServer();
