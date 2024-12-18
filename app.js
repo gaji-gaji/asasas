@@ -5,7 +5,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const connectDB = require('./db'); // db.js 가져오기
 const { authenticateToken } = require('./jwt'); // jwt.js 가져오기
+const http = require("http");
+const dotenv = require("dotenv");
 
+dotenv.config();
 
 const app = express();
 
@@ -28,6 +31,17 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/market', marketRoutes);
+
+// 잘못된 경로 처리
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// 전역 에러 핸들러
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ message: 'Internal server error' });
+});
 
 // Start Server
 const PORT = process.env.PORT || 3000;
